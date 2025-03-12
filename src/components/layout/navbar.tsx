@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Logo } from '@/components/ui/logo';
 import { Button } from '@/components/ui/button';
 import { 
@@ -12,6 +12,12 @@ import {
 } from 'lucide-react';
 
 export function Navbar() {
+  const location = useLocation();
+  
+  const isActive = (path: string) => {
+    return location.pathname.startsWith(path) ? "text-primary font-medium" : "hover:text-primary";
+  };
+
   return (
     <header className="w-full fixed top-0 z-50 glass-morphism">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
@@ -23,28 +29,28 @@ export function Navbar() {
         <nav className="hidden md:flex items-center gap-6">
           <Link 
             to="/study-materials" 
-            className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1.5"
+            className={`text-sm font-medium transition-colors flex items-center gap-1.5 ${isActive('/study-materials')}`}
           >
             <BookOpen className="h-4 w-4" />
             <span>Study Materials</span>
           </Link>
           <Link 
             to="/events" 
-            className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1.5"
+            className={`text-sm font-medium transition-colors flex items-center gap-1.5 ${isActive('/events')}`}
           >
             <CalendarDays className="h-4 w-4" />
             <span>Events</span>
           </Link>
           <Link 
             to="/forum" 
-            className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1.5"
+            className={`text-sm font-medium transition-colors flex items-center gap-1.5 ${isActive('/forum')}`}
           >
             <MessageSquare className="h-4 w-4" />
             <span>Forum</span>
           </Link>
           <Link 
             to="/notice-board" 
-            className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1.5"
+            className={`text-sm font-medium transition-colors flex items-center gap-1.5 ${isActive('/notice-board')}`}
           >
             <Bell className="h-4 w-4" />
             <span>Notices</span>

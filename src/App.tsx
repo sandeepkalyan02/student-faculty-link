@@ -9,6 +9,7 @@ import Choice from "./pages/auth/Choice";
 import StudentLogin from "./pages/auth/StudentLogin";
 import FacultyLogin from "./pages/auth/FacultyLogin";
 import AdminLogin from "./pages/auth/AdminLogin";
+import StudyMaterials from "./pages/StudyMaterials";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/auth/student-login" element={<StudentLogin />} />
           <Route path="/auth/faculty-login" element={<FacultyLogin />} />
           <Route path="/auth/admin-login" element={<AdminLogin />} />
+          <Route path="/study-materials" element={<StudyMaterials />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
