@@ -4,35 +4,28 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/contexts/AuthContext';
-import { BookOpen, Calendar, MessageSquare, Bell, Download, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { BookOpen, CalendarDays, MessageSquare, Bell, LogOut } from 'lucide-react';
 
 const StudentDashboard = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
-  // Sample data for the dashboard
+  // Sample data for dashboard
   const recentMaterials = [
-    { id: 1, title: "Introduction to Computer Science", subject: "Computer Science", downloadCount: 156 },
-    { id: 2, title: "Calculus I Study Guide", subject: "Mathematics", downloadCount: 234 },
-    { id: 3, title: "Organic Chemistry Notes", subject: "Chemistry", downloadCount: 98 }
+    { id: 1, title: "Introduction to Computer Science", subject: "Computer Science" },
+    { id: 2, title: "Calculus I Study Guide", subject: "Mathematics" },
+    { id: 3, title: "Organic Chemistry Notes", subject: "Chemistry" },
   ];
 
   const upcomingEvents = [
-    { id: 1, title: "Annual Tech Symposium", date: "Dec 15, 2023", venue: "Main Auditorium" },
-    { id: 2, title: "Career Fair 2023", date: "Nov 20, 2023", venue: "University Sports Complex" }
+    { id: 1, title: "Programming Contest", date: "2023-12-15", location: "Computer Lab" },
+    { id: 2, title: "Math Workshop", date: "2023-12-18", location: "Room 204" },
   ];
 
   const recentDiscussions = [
-    { id: 1, title: "Tips for Final Year Project", replies: 2, upvotes: 15 },
-    { id: 2, title: "Calculus Study Group", replies: 3, upvotes: 23 }
-  ];
-
-  const importantNotices = [
-    { id: 1, title: "End Semester Examination Schedule", category: "Examination", importance: "High" },
-    { id: 2, title: "Campus Recruitment Drive by Tech Innovators", category: "Placement", importance: "Medium" }
+    { id: 1, title: "Help with Java assignment", replies: 5 },
+    { id: 2, title: "Study group for finals", replies: 8 },
   ];
 
   return (
@@ -48,192 +41,110 @@ const StudentDashboard = () => {
                 Welcome back, {user?.name}
               </p>
             </div>
-            <div className="mt-4 md:mt-0 flex space-x-4">
-              <Button variant="outline" onClick={() => navigate('/profile')} className="hover-scale focus-ring">
-                My Profile
-              </Button>
+            <div className="flex items-center gap-2 mt-4 md:mt-0">
               <Button variant="outline" onClick={logout} className="hover-scale focus-ring">
-                Sign Out
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
               </Button>
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card className="neo-glass">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Study Materials</CardTitle>
-                <CardDescription>Recently uploaded materials</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-primary">{recentMaterials.length}</div>
-                <p className="text-sm text-muted-foreground mt-1">New materials this week</p>
-              </CardContent>
-            </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Link to="/study-materials" className="block hover:no-underline">
+              <Card className="h-full neo-glass hover-scale transition-all duration-300">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center text-xl">
+                    <BookOpen className="mr-2 h-5 w-5 text-primary" />
+                    Study Materials
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">Access lecture notes, guides and resources</p>
+                  <div className="space-y-2">
+                    {recentMaterials.map(material => (
+                      <div key={material.id} className="p-2 rounded-md bg-background/50">
+                        <p className="font-medium text-sm">{material.title}</p>
+                        <p className="text-xs text-muted-foreground">{material.subject}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
             
-            <Card className="neo-glass">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Events</CardTitle>
-                <CardDescription>Upcoming campus events</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-primary">{upcomingEvents.length}</div>
-                <p className="text-sm text-muted-foreground mt-1">Events in next 30 days</p>
-              </CardContent>
-            </Card>
+            <Link to="/events" className="block hover:no-underline">
+              <Card className="h-full neo-glass hover-scale transition-all duration-300">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center text-xl">
+                    <CalendarDays className="mr-2 h-5 w-5 text-primary" />
+                    Upcoming Events
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">View and register for campus events</p>
+                  <div className="space-y-2">
+                    {upcomingEvents.map(event => (
+                      <div key={event.id} className="p-2 rounded-md bg-background/50">
+                        <p className="font-medium text-sm">{event.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(event.date).toLocaleDateString()} • {event.location}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
             
-            <Card className="neo-glass">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Forum</CardTitle>
-                <CardDescription>Active discussions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-primary">{recentDiscussions.length}</div>
-                <p className="text-sm text-muted-foreground mt-1">Recent discussions</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="neo-glass">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Notices</CardTitle>
-                <CardDescription>Important announcements</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-primary">{importantNotices.length}</div>
-                <p className="text-sm text-muted-foreground mt-1">Unread notices</p>
-              </CardContent>
-            </Card>
+            <Link to="/forum" className="block hover:no-underline">
+              <Card className="h-full neo-glass hover-scale transition-all duration-300">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center text-xl">
+                    <MessageSquare className="mr-2 h-5 w-5 text-primary" />
+                    Discussions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">Join conversations with peers and faculty</p>
+                  <div className="space-y-2">
+                    {recentDiscussions.map(discussion => (
+                      <div key={discussion.id} className="p-2 rounded-md bg-background/50">
+                        <p className="font-medium text-sm">{discussion.title}</p>
+                        <p className="text-xs text-muted-foreground">{discussion.replies} replies</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             <Card className="neo-glass">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">Recent Study Materials</CardTitle>
-                  <Link to="/study-materials">
-                    <Button variant="outline" size="sm" className="hover-scale focus-ring">
-                      <BookOpen className="h-4 w-4 mr-2" />
-                      View All
-                    </Button>
-                  </Link>
-                </div>
+                <CardTitle className="flex items-center text-xl">
+                  <Bell className="mr-2 h-5 w-5 text-primary" />
+                  Recent Announcements
+                </CardTitle>
+                <CardDescription>Important notices from faculty and administration</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentMaterials.map(material => (
-                    <div key={material.id} className="flex items-center justify-between p-3 rounded-md hover:bg-accent transition-colors">
-                      <div>
-                        <h3 className="font-medium">{material.title}</h3>
-                        <p className="text-sm text-muted-foreground">{material.subject}</p>
-                      </div>
-                      <Button variant="ghost" size="icon" className="hover-scale focus-ring">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="neo-glass">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">Upcoming Events</CardTitle>
-                  <Link to="/events">
-                    <Button variant="outline" size="sm" className="hover-scale focus-ring">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      View All
-                    </Button>
-                  </Link>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {upcomingEvents.map(event => (
-                    <div key={event.id} className="flex items-center justify-between p-3 rounded-md hover:bg-accent transition-colors">
-                      <div>
-                        <h3 className="font-medium">{event.title}</h3>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          <span>{event.date}</span>
-                          <span className="mx-2">•</span>
-                          <span>{event.venue}</span>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="icon" className="hover-scale focus-ring">
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="neo-glass">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">Recent Discussions</CardTitle>
-                  <Link to="/forum">
-                    <Button variant="outline" size="sm" className="hover-scale focus-ring">
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      View All
-                    </Button>
-                  </Link>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentDiscussions.map(discussion => (
-                    <div key={discussion.id} className="flex items-center justify-between p-3 rounded-md hover:bg-accent transition-colors">
-                      <div>
-                        <h3 className="font-medium">{discussion.title}</h3>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <MessageSquare className="h-3 w-3 mr-1" />
-                          <span>{discussion.replies} replies</span>
-                          <span className="mx-2">•</span>
-                          <span>{discussion.upvotes} upvotes</span>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="icon" className="hover-scale focus-ring">
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="neo-glass">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">Important Notices</CardTitle>
-                  <Link to="/notice-board">
-                    <Button variant="outline" size="sm" className="hover-scale focus-ring">
-                      <Bell className="h-4 w-4 mr-2" />
-                      View All
-                    </Button>
-                  </Link>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {importantNotices.map(notice => (
-                    <div key={notice.id} className="flex items-center justify-between p-3 rounded-md hover:bg-accent transition-colors">
-                      <div>
-                        <h3 className="font-medium">{notice.title}</h3>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <span className="px-1.5 py-0.5 text-xs rounded-full bg-primary/10 text-primary mr-2">
-                            {notice.category}
-                          </span>
-                          <span className="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
-                            {notice.importance} Priority
-                          </span>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="icon" className="hover-scale focus-ring">
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+                  <div className="p-3 rounded-md bg-background/50 border-l-4 border-primary">
+                    <p className="font-medium">Final Exam Schedule Posted</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      The final examination schedule for the Fall semester has been posted. Please check your email for details.
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">Posted by Admin • 2 days ago</p>
+                  </div>
+                  
+                  <div className="p-3 rounded-md bg-background/50 border-l-4 border-yellow-500">
+                    <p className="font-medium">Campus Library Holiday Hours</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      The campus library will have adjusted hours during the upcoming holiday break. See announcement for details.
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">Posted by Dr. Smith • 4 days ago</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -6,91 +6,94 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Calendar, Clock, MapPin, Users, Download, Filter } from 'lucide-react';
+import { Search, Calendar, Filter, MapPin, Users, Clock, CalendarPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { format } from 'date-fns';
 
 // Sample data for events
 const SAMPLE_EVENTS = [
   {
     id: 1,
-    title: "Annual Tech Symposium",
-    description: "Join us for the annual technology symposium featuring guest speakers from leading tech companies.",
-    category: "Academic",
-    department: "Computer Science",
-    venue: "Main Auditorium",
+    title: "Programming Contest",
+    description: "Participate in our annual programming competition and showcase your coding skills",
+    category: "Competition",
     date: "2023-12-15",
-    time: "09:00 AM - 05:00 PM",
-    organizer: "Dr. James Wilson",
-    capacity: 500,
-    registered: 327,
+    time: "10:00 AM - 4:00 PM",
+    location: "Computer Science Building, Room 302",
+    organizer: "Dr. Smith",
+    department: "Computer Science",
+    registrations: 42,
+    maxRegistrations: 50,
     attachments: [
-      { name: "Event Schedule.pdf", size: "1.2 MB" }
+      { name: "Contest Rules.pdf", size: "245 KB" },
+      { name: "Registration Form.docx", size: "125 KB" }
     ]
   },
   {
     id: 2,
-    title: "Career Fair 2023",
-    description: "Connect with over 50 companies looking to hire students and graduates for internships and full-time positions.",
-    category: "Career",
-    department: "Placement Cell",
-    venue: "University Sports Complex",
-    date: "2023-11-20",
-    time: "10:00 AM - 04:00 PM",
-    organizer: "Placement Office",
-    capacity: 1000,
-    registered: 756,
+    title: "Business Ethics Workshop",
+    description: "A workshop on ethical practices in modern business environments",
+    category: "Workshop",
+    date: "2023-12-18",
+    time: "2:00 PM - 5:00 PM",
+    location: "Business School, Auditorium A",
+    organizer: "Prof. Johnson",
+    department: "Business",
+    registrations: 28,
+    maxRegistrations: 75,
     attachments: [
-      { name: "Company List.pdf", size: "2.1 MB" },
-      { name: "CV Format.docx", size: "550 KB" }
+      { name: "Workshop Outline.pdf", size: "320 KB" },
+      { name: "Preparation Materials.pdf", size: "1.2 MB" }
     ]
   },
   {
     id: 3,
-    title: "Chemical Engineering Workshop",
-    description: "Hands-on workshop on advanced chemical engineering principles and laboratory techniques.",
-    category: "Academic",
-    department: "Chemical Engineering",
-    venue: "Chemical Engineering Lab",
-    date: "2023-12-05",
-    time: "02:00 PM - 05:00 PM",
-    organizer: "Prof. Sarah Johnson",
-    capacity: 60,
-    registered: 42,
+    title: "Chemistry Research Symposium",
+    description: "Annual symposium showcasing recent advances in chemistry research",
+    category: "Symposium",
+    date: "2023-12-20",
+    time: "9:00 AM - 6:00 PM",
+    location: "Science Building, Conference Hall",
+    organizer: "Dr. Williams",
+    department: "Chemistry",
+    registrations: 65,
+    maxRegistrations: 100,
     attachments: [
-      { name: "Workshop Material.pdf", size: "3.5 MB" }
+      { name: "Schedule.pdf", size: "410 KB" },
+      { name: "Abstract Booklet.pdf", size: "2.3 MB" }
     ]
   },
   {
     id: 4,
-    title: "Entrepreneurship Seminar",
-    description: "Learn from successful entrepreneurs about starting your own business and securing funding.",
-    category: "Career",
-    department: "Business School",
-    venue: "Business School Seminar Hall",
-    date: "2023-11-25",
-    time: "01:00 PM - 03:00 PM",
-    organizer: "Prof. Robert Miller",
-    capacity: 120,
-    registered: 98,
-    attachments: []
+    title: "Literature Reading Club",
+    description: "Monthly meeting of the campus literature reading club",
+    category: "Club Meeting",
+    date: "2023-12-22",
+    time: "4:00 PM - 6:00 PM",
+    location: "Arts Building, Room 104",
+    organizer: "Prof. Davis",
+    department: "English Literature",
+    registrations: 18,
+    maxRegistrations: 30,
+    attachments: [
+      { name: "Reading List.pdf", size: "185 KB" }
+    ]
   },
   {
     id: 5,
-    title: "Cultural Festival",
-    description: "Annual cultural festival featuring music, dance, art, and food from diverse cultures.",
-    category: "Cultural",
-    department: "Student Affairs",
-    venue: "Campus Grounds",
-    date: "2023-12-10",
-    time: "11:00 AM - 10:00 PM",
-    organizer: "Cultural Committee",
-    capacity: 2000,
-    registered: 1256,
+    title: "Career Fair",
+    description: "Connect with potential employers and explore career opportunities",
+    category: "Career Development",
+    date: "2024-01-10",
+    time: "10:00 AM - 3:00 PM",
+    location: "Student Center, Main Hall",
+    organizer: "Career Services",
+    department: "Administration",
+    registrations: 120,
+    maxRegistrations: 200,
     attachments: [
-      { name: "Festival Schedule.pdf", size: "1.8 MB" },
-      { name: "Campus Map.pdf", size: "900 KB" }
+      { name: "Participating Companies.pdf", size: "520 KB" },
+      { name: "Resume Tips.pdf", size: "275 KB" }
     ]
   }
 ];
@@ -98,15 +101,17 @@ const SAMPLE_EVENTS = [
 const Events = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredEvents, setFilteredEvents] = useState(SAMPLE_EVENTS);
-  const { user } = useAuth();
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const { user, checkAccess } = useAuth();
   
+  const canCreateEvent = user && checkAccess(['faculty', 'admin']);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const filtered = SAMPLE_EVENTS.filter(event => 
       event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.department.toLowerCase().includes(searchQuery.toLowerCase())
+      event.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredEvents(filtered);
     
@@ -118,21 +123,17 @@ const Events = () => {
   };
 
   const handleRegister = (eventId: number) => {
-    // In a real app, this would call an API to register the user
+    // In a real app, this would register the user for the event
     toast.success("Registration successful", { 
-      description: "You have been registered for this event" 
+      description: "You have been registered for this event." 
     });
   };
 
-  const handleDownload = (attachmentName: string) => {
+  const handleDownloadAttachment = (attachmentName: string) => {
     // In a real app, this would trigger a download
     toast.success("Download started", { 
-      description: `${attachmentName} will be downloaded shortly` 
+      description: `${attachmentName} will be downloaded shortly.` 
     });
-  };
-
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'PPP');
   };
 
   return (
@@ -145,12 +146,12 @@ const Events = () => {
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Campus Events</h1>
               <p className="text-muted-foreground mt-2">
-                Discover and register for upcoming events
+                Discover and register for upcoming events on campus
               </p>
             </div>
-            {(user?.role === 'faculty' || user?.role === 'admin') && (
+            {canCreateEvent && (
               <Button className="mt-4 md:mt-0 hover-scale focus-ring">
-                <Calendar className="mr-2 h-4 w-4" />
+                <CalendarPlus className="mr-2 h-4 w-4" />
                 Create Event
               </Button>
             )}
@@ -162,7 +163,7 @@ const Events = () => {
                 <div className="relative flex-grow">
                   <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search by title, description, category or department..."
+                    placeholder="Search by title, description, or category..."
                     className="pl-10"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -182,100 +183,92 @@ const Events = () => {
           <Tabs defaultValue="all" className="w-full">
             <TabsList className="mb-6">
               <TabsTrigger value="all">All Events</TabsTrigger>
-              <TabsTrigger value="academic">Academic</TabsTrigger>
-              <TabsTrigger value="career">Career</TabsTrigger>
-              <TabsTrigger value="cultural">Cultural</TabsTrigger>
+              <TabsTrigger value="upcoming">Upcoming Events</TabsTrigger>
+              <TabsTrigger value="registered">My Registrations</TabsTrigger>
+              {canCreateEvent && (
+                <TabsTrigger value="created">My Events</TabsTrigger>
+              )}
             </TabsList>
             
-            <TabsContent value="all" className="space-y-4">
+            <TabsContent value="all" className="space-y-6">
               {filteredEvents.map(event => (
                 <Card key={event.id} className="neo-glass hover:shadow-md transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="text-xl">{event.title}</CardTitle>
-                    <CardDescription>{event.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm">
-                          <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span className="font-medium">{formatDate(event.date)}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{event.venue}</span>
-                        </div>
+                  <CardHeader className="pb-2">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2">
+                      <div>
+                        <CardTitle className="text-xl">{event.title}</CardTitle>
+                        <CardDescription>{event.description}</CardDescription>
                       </div>
-                      <div className="space-y-2">
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Category: </span>
-                          <span className="font-medium">{event.category}</span>
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Department: </span>
-                          <span className="font-medium">{event.department}</span>
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Organizer: </span>
-                          <span className="font-medium">{event.organizer}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center text-sm">
-                          <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{event.registered} / {event.capacity} registered</span>
-                        </div>
-                        <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                      <div className="flex flex-shrink-0 items-center">
+                        <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
                           {event.category}
                         </span>
                       </div>
-                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full"
-                          style={{ width: `${(event.registered / event.capacity) * 100}%` }}
-                        ></div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
+                      <div className="flex items-start gap-2">
+                        <Calendar className="h-4 w-4 text-primary mt-0.5" />
+                        <div>
+                          <p className="text-muted-foreground">Date & Time</p>
+                          <p className="font-medium">{new Date(event.date).toLocaleDateString()}</p>
+                          <p className="text-xs">{event.time}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 text-primary mt-0.5" />
+                        <div>
+                          <p className="text-muted-foreground">Location</p>
+                          <p className="font-medium">{event.location}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Users className="h-4 w-4 text-primary mt-0.5" />
+                        <div>
+                          <p className="text-muted-foreground">Registration</p>
+                          <p className="font-medium">
+                            {event.registrations}/{event.maxRegistrations} spots filled
+                          </p>
+                          <div className="w-full bg-secondary h-1.5 rounded-full mt-1">
+                            <div 
+                              className="bg-primary h-1.5 rounded-full" 
+                              style={{ width: `${(event.registrations / event.maxRegistrations) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     
                     {event.attachments.length > 0 && (
-                      <div className="mt-4">
-                        <h4 className="text-sm font-medium mb-2">Attachments</h4>
-                        <div className="space-y-2">
+                      <div className="border-t pt-3 mt-2">
+                        <p className="text-sm font-medium mb-2">Attachments:</p>
+                        <div className="flex flex-wrap gap-2">
                           {event.attachments.map((attachment, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 rounded-md bg-slate-100 dark:bg-slate-800">
-                              <span className="text-sm">{attachment.name} ({attachment.size})</span>
-                              <Button 
-                                size="sm" 
-                                variant="ghost"
-                                onClick={() => handleDownload(attachment.name)}
-                              >
-                                <Download className="h-4 w-4" />
-                              </Button>
-                            </div>
+                            <Button 
+                              key={index}
+                              size="sm"
+                              variant="outline"
+                              className="text-xs"
+                              onClick={() => handleDownloadAttachment(attachment.name)}
+                            >
+                              {attachment.name} ({attachment.size})
+                            </Button>
                           ))}
                         </div>
                       </div>
                     )}
                   </CardContent>
-                  <CardFooter className="flex justify-between">
+                  <CardFooter className="flex justify-between items-center">
                     <div className="text-xs text-muted-foreground">
-                      {event.registered < event.capacity 
-                        ? `${event.capacity - event.registered} spots remaining` 
-                        : "Event fully booked"}
+                      Organized by {event.organizer} • {event.department} Department
                     </div>
                     <Button 
                       onClick={() => handleRegister(event.id)}
-                      disabled={event.registered >= event.capacity}
+                      disabled={event.registrations >= event.maxRegistrations}
                       className="hover-scale focus-ring"
                     >
-                      Register
+                      {event.registrations >= event.maxRegistrations ? "Fully Booked" : "Register"}
                     </Button>
                   </CardFooter>
                 </Card>
@@ -292,179 +285,120 @@ const Events = () => {
               )}
             </TabsContent>
             
-            <TabsContent value="academic" className="space-y-4">
-              {filteredEvents.filter(e => e.category === "Academic").map(event => (
-                // Similar card structure as above
+            <TabsContent value="upcoming" className="space-y-6">
+              {/* Filter for upcoming events (would use date filtering in a real app) */}
+              {filteredEvents.filter(e => new Date(e.date) >= new Date()).map(event => (
                 <Card key={event.id} className="neo-glass hover:shadow-md transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="text-xl">{event.title}</CardTitle>
-                    <CardDescription>{event.description}</CardDescription>
+                  {/* Same card content as above */}
+                  <CardHeader className="pb-2">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2">
+                      <div>
+                        <CardTitle className="text-xl">{event.title}</CardTitle>
+                        <CardDescription>{event.description}</CardDescription>
+                      </div>
+                      <div className="flex flex-shrink-0 items-center">
+                        <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                          {event.category}
+                        </span>
+                      </div>
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm">
-                          <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span className="font-medium">{formatDate(event.date)}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{event.venue}</span>
+                  <CardContent className="pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
+                      <div className="flex items-start gap-2">
+                        <Calendar className="h-4 w-4 text-primary mt-0.5" />
+                        <div>
+                          <p className="text-muted-foreground">Date & Time</p>
+                          <p className="font-medium">{new Date(event.date).toLocaleDateString()}</p>
+                          <p className="text-xs">{event.time}</p>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Category: </span>
-                          <span className="font-medium">{event.category}</span>
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 text-primary mt-0.5" />
+                        <div>
+                          <p className="text-muted-foreground">Location</p>
+                          <p className="font-medium">{event.location}</p>
                         </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Department: </span>
-                          <span className="font-medium">{event.department}</span>
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Organizer: </span>
-                          <span className="font-medium">{event.organizer}</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Users className="h-4 w-4 text-primary mt-0.5" />
+                        <div>
+                          <p className="text-muted-foreground">Registration</p>
+                          <p className="font-medium">
+                            {event.registrations}/{event.maxRegistrations} spots filled
+                          </p>
+                          <div className="w-full bg-secondary h-1.5 rounded-full mt-1">
+                            <div 
+                              className="bg-primary h-1.5 rounded-full" 
+                              style={{ width: `${(event.registrations / event.maxRegistrations) * 100}%` }}
+                            ></div>
+                          </div>
                         </div>
                       </div>
                     </div>
+                    
+                    {event.attachments.length > 0 && (
+                      <div className="border-t pt-3 mt-2">
+                        <p className="text-sm font-medium mb-2">Attachments:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {event.attachments.map((attachment, index) => (
+                            <Button 
+                              key={index}
+                              size="sm"
+                              variant="outline"
+                              className="text-xs"
+                              onClick={() => handleDownloadAttachment(attachment.name)}
+                            >
+                              {attachment.name} ({attachment.size})
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
-                  <CardFooter className="flex justify-between">
+                  <CardFooter className="flex justify-between items-center">
                     <div className="text-xs text-muted-foreground">
-                      {event.registered < event.capacity 
-                        ? `${event.capacity - event.registered} spots remaining` 
-                        : "Event fully booked"}
+                      Organized by {event.organizer} • {event.department} Department
                     </div>
                     <Button 
                       onClick={() => handleRegister(event.id)}
-                      disabled={event.registered >= event.capacity}
+                      disabled={event.registrations >= event.maxRegistrations}
                       className="hover-scale focus-ring"
                     >
-                      Register
+                      {event.registrations >= event.maxRegistrations ? "Fully Booked" : "Register"}
                     </Button>
                   </CardFooter>
                 </Card>
               ))}
             </TabsContent>
             
-            <TabsContent value="career" className="space-y-4">
-              {filteredEvents.filter(e => e.category === "Career").map(event => (
-                // Similar card structure as above
-                <Card key={event.id} className="neo-glass hover:shadow-md transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="text-xl">{event.title}</CardTitle>
-                    <CardDescription>{event.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm">
-                          <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span className="font-medium">{formatDate(event.date)}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{event.venue}</span>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Category: </span>
-                          <span className="font-medium">{event.category}</span>
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Department: </span>
-                          <span className="font-medium">{event.department}</span>
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Organizer: </span>
-                          <span className="font-medium">{event.organizer}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <div className="text-xs text-muted-foreground">
-                      {event.registered < event.capacity 
-                        ? `${event.capacity - event.registered} spots remaining` 
-                        : "Event fully booked"}
-                    </div>
-                    <Button 
-                      onClick={() => handleRegister(event.id)}
-                      disabled={event.registered >= event.capacity}
-                      className="hover-scale focus-ring"
-                    >
-                      Register
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+            <TabsContent value="registered" className="space-y-6">
+              {/* In a real app, this would show events the user has registered for */}
+              <div className="text-center py-12">
+                <Clock className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
+                <h3 className="mt-4 text-lg font-medium">No registered events</h3>
+                <p className="mt-2 text-muted-foreground">
+                  You haven't registered for any events yet.
+                </p>
+              </div>
             </TabsContent>
             
-            <TabsContent value="cultural" className="space-y-4">
-              {filteredEvents.filter(e => e.category === "Cultural").map(event => (
-                // Similar card structure as above
-                <Card key={event.id} className="neo-glass hover:shadow-md transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="text-xl">{event.title}</CardTitle>
-                    <CardDescription>{event.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm">
-                          <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span className="font-medium">{formatDate(event.date)}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{event.venue}</span>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Category: </span>
-                          <span className="font-medium">{event.category}</span>
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Department: </span>
-                          <span className="font-medium">{event.department}</span>
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Organizer: </span>
-                          <span className="font-medium">{event.organizer}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <div className="text-xs text-muted-foreground">
-                      {event.registered < event.capacity 
-                        ? `${event.capacity - event.registered} spots remaining` 
-                        : "Event fully booked"}
-                    </div>
-                    <Button 
-                      onClick={() => handleRegister(event.id)}
-                      disabled={event.registered >= event.capacity}
-                      className="hover-scale focus-ring"
-                    >
-                      Register
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </TabsContent>
+            {canCreateEvent && (
+              <TabsContent value="created" className="space-y-6">
+                {/* In a real app, this would show events created by faculty/admin */}
+                <div className="text-center py-12">
+                  <CalendarPlus className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
+                  <h3 className="mt-4 text-lg font-medium">No events created</h3>
+                  <p className="mt-2 text-muted-foreground">
+                    You haven't created any events yet.
+                  </p>
+                  <Button className="mt-6 hover-scale focus-ring">
+                    <CalendarPlus className="mr-2 h-4 w-4" />
+                    Create Your First Event
+                  </Button>
+                </div>
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </main>

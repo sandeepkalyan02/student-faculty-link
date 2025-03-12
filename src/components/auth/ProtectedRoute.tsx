@@ -1,39 +1,44 @@
 
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-
-type UserRole = 'student' | 'faculty' | 'admin' | null;
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles: UserRole[];
+  allowedRoles?: ('student' | 'faculty' | 'admin')[];
+  redirectTo?: string;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+const ProtectedRoute = ({ 
   children, 
-  allowedRoles 
-}) => {
+  allowedRoles = [], 
+  redirectTo = '/auth/choice' 
+}: ProtectedRouteProps) => {
   const { user, isAuthenticated, isLoading } = useAuth();
-  const location = useLocation();
 
+  // Show a loading state
   if (isLoading) {
-    // Show a loading indicator while checking authentication
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        <span className="ml-2">Loading...</span>
       </div>
     );
   }
 
+  // If user is not authenticated, redirect to login choice
   if (!isAuthenticated) {
-    // Redirect to login page if not authenticated
-    return <Navigate to="/auth/choice" state={{ from: location }} replace />;
+    return <Navigate to={redirectTo} replace />;
   }
 
-  // Check if user role is allowed
+  // If allowedRoles is empty, allow any authenticated user
+  if (allowedRoles.length === 0) {
+    return <>{children}</>;
+  }
+
+  // If user role doesn't match allowed roles, redirect to appropriate dashboard
   if (user && !allowedRoles.includes(user.role)) {
-    // Redirect to appropriate dashboard based on role
+    // Redirect to the corresponding dashboard based on user role
     if (user.role === 'student') {
       return <Navigate to="/student/dashboard" replace />;
     } else if (user.role === 'faculty') {
@@ -41,7 +46,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     } else if (user.role === 'admin') {
       return <Navigate to="/admin/dashboard" replace />;
     }
+    
+    // Fallback to login choice if role is unknown
+    return <Navigate to={redirectTo} replace />;
   }
 
+  // User is authenticated and has the correct role
   return <>{children}</>;
 };
+
+export default ProtectedRoute;

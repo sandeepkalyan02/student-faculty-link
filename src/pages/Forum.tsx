@@ -4,165 +4,199 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, MessageSquare, ThumbsUp, Filter, Clock, User } from 'lucide-react';
+import { Search, MessageSquare, PlusCircle, ThumbsUp, MessagesSquare, Filter, Flag } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { formatDistance } from 'date-fns';
 
-// Sample data for forum discussions
-const SAMPLE_DISCUSSIONS = [
+// Sample data for forum posts
+const SAMPLE_POSTS = [
   {
     id: 1,
-    title: "Tips for Final Year Project",
-    content: "I'm starting my final year project in AI and looking for some advice on choosing a specific area to focus on. Has anyone completed a project in this field?",
+    title: "Help with Java assignment",
+    content: "I'm struggling with inheritance in Java. Can someone explain how the 'extends' keyword works with concrete examples?",
     author: {
-      id: "s2",
-      name: "Alex Johnson",
+      id: 's1',
+      name: "John Student",
       role: "student",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John"
     },
-    category: "Academic",
-    tags: ["Projects", "AI", "Final Year"],
-    createdAt: "2023-11-10T14:30:00Z",
-    updatedAt: "2023-11-10T14:30:00Z",
-    upvotes: 15,
-    views: 124,
+    date: "2023-12-05T14:30:00",
+    category: "Programming",
+    upvotes: 8,
     replies: [
       {
         id: 101,
-        content: "I did my project on natural language processing. It's a fascinating area with a lot of practical applications. Happy to share my experience if you're interested.",
+        content: "Inheritance in Java allows one class to inherit properties and methods from another class. Here's an example...",
         author: {
-          id: "s3",
-          name: "Emma Williams",
-          role: "student",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma"
+          id: 'f1',
+          name: "Dr. Smith",
+          role: "faculty",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Smith"
         },
-        createdAt: "2023-11-10T15:45:00Z",
-        upvotes: 8
+        date: "2023-12-05T15:45:00",
+        upvotes: 3
       },
       {
         id: 102,
-        content: "Computer vision is another good area to explore, especially if you have an interest in image processing or autonomous systems.",
+        content: "Thanks for the explanation Dr. Smith! Could you also explain method overriding in this context?",
         author: {
-          id: "f2",
-          name: "Dr. Roberts",
-          role: "faculty",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Roberts"
+          id: 's1',
+          name: "John Student",
+          role: "student",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John"
         },
-        createdAt: "2023-11-11T09:20:00Z",
-        upvotes: 12
+        date: "2023-12-05T16:20:00",
+        upvotes: 1
       }
     ]
   },
   {
     id: 2,
-    title: "Calculus Study Group",
-    content: "Is anyone interested in forming a study group for advanced calculus? We could meet twice a week at the library to solve problems together.",
+    title: "Study group for finals",
+    content: "Looking to form a study group for the upcoming calculus final exam. Anyone interested in joining?",
     author: {
-      id: "s4",
-      name: "Michael Chen",
+      id: 's2',
+      name: "Alice Student",
       role: "student",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael"
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice"
     },
-    category: "Study Group",
-    tags: ["Mathematics", "Calculus", "Group Study"],
-    createdAt: "2023-11-08T10:15:00Z",
-    updatedAt: "2023-11-09T16:40:00Z",
-    upvotes: 23,
-    views: 198,
+    date: "2023-12-04T09:15:00",
+    category: "Mathematics",
+    upvotes: 12,
     replies: [
       {
         id: 201,
-        content: "I'm interested! I've been struggling with some of the concepts and think a group would really help.",
+        content: "I'm interested! I've been working on past papers and have some good resources to share.",
         author: {
-          id: "s5",
-          name: "Sarah Miller",
+          id: 's3',
+          name: "Bob Student",
           role: "student",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Bob"
         },
-        createdAt: "2023-11-08T11:30:00Z",
-        upvotes: 5
+        date: "2023-12-04T10:30:00",
+        upvotes: 2
       },
       {
         id: 202,
-        content: "Count me in! What days were you thinking?",
+        content: "Count me in too. I'm struggling with integration by parts if anyone can help with that.",
         author: {
-          id: "s6",
-          name: "David Wilson",
+          id: 's4',
+          name: "Charlie Student",
           role: "student",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=David"
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie"
         },
-        createdAt: "2023-11-08T14:20:00Z",
-        upvotes: 4
+        date: "2023-12-04T11:45:00",
+        upvotes: 1
       },
       {
         id: 203,
-        content: "I'd recommend focusing on problem-solving rather than just reviewing notes. That approach worked well for our group last semester.",
+        content: "I've booked a study room for tomorrow at 3 PM in the library. All are welcome!",
         author: {
-          id: "s7",
-          name: "Jennifer Lee",
+          id: 's2',
+          name: "Alice Student",
           role: "student",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jennifer"
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice"
         },
-        createdAt: "2023-11-09T09:15:00Z",
-        upvotes: 10
+        date: "2023-12-04T14:00:00",
+        upvotes: 5
       }
     ]
   },
   {
     id: 3,
-    title: "Internship Opportunities in Software Development",
-    content: "Has anyone had a good experience with summer internships at tech companies? I'm looking for recommendations for places that offer meaningful work for CS students.",
+    title: "Research paper recommendations",
+    content: "I'm looking for recent research papers on renewable energy for my term project. Any recommendations?",
     author: {
-      id: "s8",
-      name: "Ryan Garcia",
+      id: 's5',
+      name: "David Student",
       role: "student",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ryan"
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=David"
     },
-    category: "Career",
-    tags: ["Internships", "Computer Science", "Software Development"],
-    createdAt: "2023-11-05T16:45:00Z",
-    updatedAt: "2023-11-07T11:20:00Z",
-    upvotes: 32,
-    views: 245,
+    date: "2023-12-03T16:20:00",
+    category: "Research",
+    upvotes: 6,
     replies: [
       {
         id: 301,
-        content: "I interned at Google last summer and had a great experience. They have a structured program for interns with real projects and good mentorship.",
+        content: "I'd recommend checking the Journal of Renewable Energy. They have several recent publications that might be relevant.",
         author: {
-          id: "s9",
-          name: "Lisa Brown",
-          role: "student",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa"
-        },
-        createdAt: "2023-11-05T17:30:00Z",
-        upvotes: 15
-      },
-      {
-        id: 302,
-        content: "Don't overlook smaller companies! I had an amazing internship at a local startup where I got to contribute to their main product directly.",
-        author: {
-          id: "s10",
-          name: "Kevin Taylor",
-          role: "student",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kevin"
-        },
-        createdAt: "2023-11-06T09:15:00Z",
-        upvotes: 18
-      },
-      {
-        id: 303,
-        content: "The university has partnerships with several tech companies that offer internships. You can check with the career office for a list of these opportunities.",
-        author: {
-          id: "f3",
-          name: "Prof. Anderson",
+          id: 'f2',
+          name: "Prof. Johnson",
           role: "faculty",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anderson"
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Johnson"
         },
-        createdAt: "2023-11-07T10:40:00Z",
-        upvotes: 22
+        date: "2023-12-03T17:30:00",
+        upvotes: 4
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "Career paths in cybersecurity",
+    content: "I'm a CS major interested in cybersecurity. What are some potential career paths and certifications I should consider?",
+    author: {
+      id: 's6',
+      name: "Eve Student",
+      role: "student",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Eve"
+    },
+    date: "2023-12-02T11:10:00",
+    category: "Career",
+    upvotes: 15,
+    replies: [
+      {
+        id: 401,
+        content: "The CompTIA Security+ is a good starting certification. For career paths, you might consider roles like...",
+        author: {
+          id: 'f3',
+          name: "Dr. Davis",
+          role: "faculty",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Davis"
+        },
+        date: "2023-12-02T13:25:00",
+        upvotes: 6
+      },
+      {
+        id: 402,
+        content: "I'm currently interning at a cybersecurity firm. Happy to share my experience if you want to chat.",
+        author: {
+          id: 's7',
+          name: "Frank Student",
+          role: "student",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Frank"
+        },
+        date: "2023-12-02T15:40:00",
+        upvotes: 3
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: "Best books for learning Python",
+    content: "Can anyone recommend good books for learning Python from scratch? Preferably with practical examples.",
+    author: {
+      id: 's8',
+      name: "Grace Student",
+      role: "student",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Grace"
+    },
+    date: "2023-12-01T09:45:00",
+    category: "Programming",
+    upvotes: 10,
+    replies: [
+      {
+        id: 501,
+        content: "'Python Crash Course' by Eric Matthes is excellent for beginners. It has practical projects too.",
+        author: {
+          id: 's9',
+          name: "Hank Student",
+          role: "student",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hank"
+        },
+        date: "2023-12-01T10:30:00",
+        upvotes: 5
       }
     ]
   }
@@ -170,18 +204,19 @@ const SAMPLE_DISCUSSIONS = [
 
 const Forum = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredDiscussions, setFilteredDiscussions] = useState(SAMPLE_DISCUSSIONS);
+  const [filteredPosts, setFilteredPosts] = useState(SAMPLE_POSTS);
+  const [expandedPost, setExpandedPost] = useState<number | null>(null);
+  const [newReply, setNewReply] = useState('');
   const { user } = useAuth();
-  
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const filtered = SAMPLE_DISCUSSIONS.filter(discussion => 
-      discussion.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      discussion.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      discussion.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      discussion.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    const filtered = SAMPLE_POSTS.filter(post => 
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredDiscussions(filtered);
+    setFilteredPosts(filtered);
     
     if (filtered.length === 0) {
       toast.info("No discussions found matching your search");
@@ -190,13 +225,36 @@ const Forum = () => {
     }
   };
 
-  const handleUpvote = (discussionId: number) => {
-    // In a real app, this would call an API to upvote
+  const handleUpvote = (postId: number) => {
     toast.success("Upvoted successfully");
+    // In a real app, this would update the upvote count
   };
 
-  const formatTimeAgo = (dateString: string) => {
-    return formatDistance(new Date(dateString), new Date(), { addSuffix: true });
+  const handleUpvoteReply = (replyId: number) => {
+    toast.success("Upvoted reply successfully");
+    // In a real app, this would update the reply upvote count
+  };
+
+  const handleSubmitReply = (postId: number) => {
+    if (!newReply.trim()) {
+      toast.error("Reply cannot be empty");
+      return;
+    }
+    
+    toast.success("Reply submitted successfully");
+    setNewReply('');
+    // In a real app, this would add the reply to the post
+  };
+
+  const handleReportPost = (postId: number) => {
+    toast.success("Post reported successfully", {
+      description: "A moderator will review this post."
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
@@ -209,11 +267,11 @@ const Forum = () => {
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Discussion Forum</h1>
               <p className="text-muted-foreground mt-2">
-                Engage in academic discussions with your peers and faculty
+                Connect with peers and faculty through academic discussions
               </p>
             </div>
             <Button className="mt-4 md:mt-0 hover-scale focus-ring">
-              <MessageSquare className="mr-2 h-4 w-4" />
+              <PlusCircle className="mr-2 h-4 w-4" />
               New Discussion
             </Button>
           </div>
@@ -224,7 +282,7 @@ const Forum = () => {
                 <div className="relative flex-grow">
                   <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search discussions by title, content, category or tags..."
+                    placeholder="Search discussions..."
                     className="pl-10"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -244,266 +302,366 @@ const Forum = () => {
           <Tabs defaultValue="all" className="w-full">
             <TabsList className="mb-6">
               <TabsTrigger value="all">All Discussions</TabsTrigger>
-              <TabsTrigger value="academic">Academic</TabsTrigger>
-              <TabsTrigger value="study-group">Study Groups</TabsTrigger>
-              <TabsTrigger value="career">Career</TabsTrigger>
+              <TabsTrigger value="popular">Popular</TabsTrigger>
+              <TabsTrigger value="recent">Recent</TabsTrigger>
+              <TabsTrigger value="my-posts">My Posts</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="all" className="space-y-4">
-              {filteredDiscussions.map(discussion => (
-                <Card key={discussion.id} className="neo-glass hover:shadow-md transition-all duration-300">
+            <TabsContent value="all" className="space-y-6">
+              {filteredPosts.map(post => (
+                <Card key={post.id} className="neo-glass hover:shadow-md transition-all duration-300">
                   <CardHeader className="pb-2">
-                    <div className="flex justify-between">
-                      <CardTitle className="text-xl">{discussion.title}</CardTitle>
-                      <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                        {discussion.category}
-                      </span>
+                    <div className="flex flex-col md:flex-row justify-between w-full">
+                      <div className="flex gap-4 items-center">
+                        <img 
+                          src={post.author.avatar} 
+                          alt={post.author.name} 
+                          className="h-10 w-10 rounded-full"
+                        />
+                        <div>
+                          <CardTitle className="text-xl">{post.title}</CardTitle>
+                          <div className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground">
+                            <span>{post.author.name}</span>
+                            <span>•</span>
+                            <span>{formatDate(post.date)}</span>
+                            <span>•</span>
+                            <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                              {post.category}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 mt-4 md:mt-0">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex items-center gap-1"
+                          onClick={() => handleUpvote(post.id)}
+                        >
+                          <ThumbsUp className="h-4 w-4" />
+                          <span>{post.upvotes}</span>
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex items-center gap-1"
+                          onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}
+                        >
+                          <MessagesSquare className="h-4 w-4" />
+                          <span>{post.replies.length}</span>
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleReportPost(post.id)}
+                        >
+                          <Flag className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <CardDescription className="line-clamp-2">{discussion.content}</CardDescription>
                   </CardHeader>
                   <CardContent className="pb-2">
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {discussion.tags.map((tag, index) => (
-                        <span key={index} className="text-xs px-2 py-0.5 rounded-full border">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="text-sm">{post.content}</p>
                     
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center space-x-2">
-                          <img 
-                            src={discussion.author.avatar} 
-                            alt={discussion.author.name}
-                            className="h-5 w-5 rounded-full"
-                          />
-                          <span className="text-sm font-medium">{discussion.author.name}</span>
-                          {discussion.author.role === 'faculty' && (
-                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                              Faculty
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-muted-foreground flex items-center">
-                          <Clock className="h-3 w-3 mr-1" />
-                          {formatTimeAgo(discussion.createdAt)}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <span className="text-xs text-muted-foreground flex items-center">
-                          <MessageSquare className="h-3 w-3 mr-1" />
-                          {discussion.replies.length} replies
-                        </span>
-                        <span className="text-xs text-muted-foreground flex items-center">
-                          <User className="h-3 w-3 mr-1" />
-                          {discussion.views} views
-                        </span>
-                      </div>
-                    </div>
-                    
-                    {discussion.replies.length > 0 && (
-                      <div className="mt-4 pt-4 border-t">
-                        <h4 className="text-sm font-medium mb-2">Recent Replies</h4>
-                        <div className="space-y-3">
-                          {discussion.replies.slice(0, 2).map(reply => (
-                            <div key={reply.id} className="p-2 rounded-md bg-slate-50 dark:bg-slate-900">
-                              <div className="flex items-center space-x-2 mb-1">
+                    {expandedPost === post.id && (
+                      <div className="mt-6 space-y-4">
+                        <div className="h-px bg-border"></div>
+                        <h3 className="font-medium text-lg">Replies ({post.replies.length})</h3>
+                        
+                        <div className="space-y-4">
+                          {post.replies.map(reply => (
+                            <div key={reply.id} className="p-3 rounded-md bg-background/50 border border-border">
+                              <div className="flex gap-3">
                                 <img 
-                                  src={reply.author.avatar} 
-                                  alt={reply.author.name}
-                                  className="h-4 w-4 rounded-full"
+                                  src={reply.author.avatar}
+                                  alt={reply.author.name} 
+                                  className="h-8 w-8 rounded-full"
                                 />
-                                <span className="text-xs font-medium">{reply.author.name}</span>
-                                {reply.author.role === 'faculty' && (
-                                  <span className="text-xs px-1 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                                    Faculty
-                                  </span>
-                                )}
-                                <span className="text-xs text-muted-foreground">
-                                  {formatTimeAgo(reply.createdAt)}
-                                </span>
-                              </div>
-                              <p className="text-xs line-clamp-2">{reply.content}</p>
-                              <div className="flex justify-end mt-1">
-                                <span className="text-xs text-muted-foreground flex items-center">
-                                  <ThumbsUp className="h-3 w-3 mr-1" />
-                                  {reply.upvotes}
-                                </span>
+                                <div className="flex-1">
+                                  <div className="flex flex-wrap justify-between">
+                                    <div>
+                                      <p className="font-medium text-sm">{reply.author.name}</p>
+                                      <p className="text-xs text-muted-foreground">{formatDate(reply.date)}</p>
+                                    </div>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      className="flex items-center gap-1 h-6"
+                                      onClick={() => handleUpvoteReply(reply.id)}
+                                    >
+                                      <ThumbsUp className="h-3 w-3" />
+                                      <span className="text-xs">{reply.upvotes}</span>
+                                    </Button>
+                                  </div>
+                                  <p className="text-sm mt-2">{reply.content}</p>
+                                </div>
                               </div>
                             </div>
                           ))}
-                          {discussion.replies.length > 2 && (
-                            <div className="text-center text-xs text-primary hover:underline cursor-pointer">
-                              View all {discussion.replies.length} replies
-                            </div>
-                          )}
                         </div>
+                        
+                        {user && (
+                          <div className="mt-4">
+                            <h4 className="text-sm font-medium mb-2">Add your reply</h4>
+                            <div className="flex gap-3">
+                              <img 
+                                src={user.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=User"}
+                                alt={user.name}
+                                className="h-8 w-8 rounded-full"
+                              />
+                              <div className="flex-1">
+                                <textarea
+                                  className="w-full p-3 border rounded-md text-sm min-h-[80px]"
+                                  placeholder="Write your reply..."
+                                  value={newReply}
+                                  onChange={(e) => setNewReply(e.target.value)}
+                                ></textarea>
+                                <div className="flex justify-end mt-2">
+                                  <Button 
+                                    size="sm"
+                                    onClick={() => handleSubmitReply(post.id)}
+                                    className="hover-scale focus-ring"
+                                  >
+                                    Post Reply
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleUpvote(discussion.id)}
-                      className="hover-scale focus-ring"
-                    >
-                      <ThumbsUp className="h-4 w-4 mr-1" />
-                      Upvote ({discussion.upvotes})
-                    </Button>
-                    <Button 
-                      size="sm"
-                      className="hover-scale focus-ring"
-                    >
-                      <MessageSquare className="h-4 w-4 mr-1" />
-                      Reply
-                    </Button>
+                  <CardFooter className="pt-2">
+                    {expandedPost !== post.id && (
+                      <Button 
+                        variant="link" 
+                        onClick={() => setExpandedPost(post.id)}
+                        className="p-0 h-auto text-primary hover:no-underline"
+                      >
+                        Show replies ({post.replies.length})
+                      </Button>
+                    )}
                   </CardFooter>
                 </Card>
               ))}
               
-              {filteredDiscussions.length === 0 && (
+              {filteredPosts.length === 0 && (
                 <div className="text-center py-12">
                   <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
                   <h3 className="mt-4 text-lg font-medium">No discussions found</h3>
                   <p className="mt-2 text-muted-foreground">
-                    Try adjusting your search or filters to find discussions.
+                    Try adjusting your search or start a new discussion.
                   </p>
                 </div>
               )}
             </TabsContent>
             
-            <TabsContent value="academic" className="space-y-4">
-              {filteredDiscussions.filter(d => d.category === "Academic").map(discussion => (
-                // Similar card structure as above
-                <Card key={discussion.id} className="neo-glass hover:shadow-md transition-all duration-300">
+            <TabsContent value="popular" className="space-y-6">
+              {filteredPosts.sort((a, b) => b.upvotes - a.upvotes).map(post => (
+                // Same card structure as above for popular posts
+                <Card key={post.id} className="neo-glass hover:shadow-md transition-all duration-300">
                   <CardHeader className="pb-2">
-                    <div className="flex justify-between">
-                      <CardTitle className="text-xl">{discussion.title}</CardTitle>
-                      <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                        {discussion.category}
-                      </span>
+                    <div className="flex flex-col md:flex-row justify-between w-full">
+                      <div className="flex gap-4 items-center">
+                        <img 
+                          src={post.author.avatar} 
+                          alt={post.author.name} 
+                          className="h-10 w-10 rounded-full"
+                        />
+                        <div>
+                          <CardTitle className="text-xl">{post.title}</CardTitle>
+                          <div className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground">
+                            <span>{post.author.name}</span>
+                            <span>•</span>
+                            <span>{formatDate(post.date)}</span>
+                            <span>•</span>
+                            <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                              {post.category}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 mt-4 md:mt-0">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex items-center gap-1"
+                          onClick={() => handleUpvote(post.id)}
+                        >
+                          <ThumbsUp className="h-4 w-4" />
+                          <span>{post.upvotes}</span>
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex items-center gap-1"
+                          onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}
+                        >
+                          <MessagesSquare className="h-4 w-4" />
+                          <span>{post.replies.length}</span>
+                        </Button>
+                      </div>
                     </div>
-                    <CardDescription className="line-clamp-2">{discussion.content}</CardDescription>
                   </CardHeader>
                   <CardContent className="pb-2">
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {discussion.tags.map((tag, index) => (
-                        <span key={index} className="text-xs px-2 py-0.5 rounded-full border">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="text-sm">{post.content}</p>
                   </CardContent>
-                  <CardFooter className="flex justify-between">
+                  <CardFooter>
                     <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleUpvote(discussion.id)}
-                      className="hover-scale focus-ring"
+                      variant="link" 
+                      onClick={() => setExpandedPost(post.id)}
+                      className="p-0 h-auto text-primary hover:no-underline"
                     >
-                      <ThumbsUp className="h-4 w-4 mr-1" />
-                      Upvote ({discussion.upvotes})
-                    </Button>
-                    <Button 
-                      size="sm"
-                      className="hover-scale focus-ring"
-                    >
-                      <MessageSquare className="h-4 w-4 mr-1" />
-                      Reply
+                      Show replies ({post.replies.length})
                     </Button>
                   </CardFooter>
                 </Card>
               ))}
             </TabsContent>
             
-            <TabsContent value="study-group" className="space-y-4">
-              {filteredDiscussions.filter(d => d.category === "Study Group").map(discussion => (
-                // Similar card structure as above
-                <Card key={discussion.id} className="neo-glass hover:shadow-md transition-all duration-300">
+            <TabsContent value="recent" className="space-y-6">
+              {filteredPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(post => (
+                // Same card structure as above for recent posts
+                <Card key={post.id} className="neo-glass hover:shadow-md transition-all duration-300">
                   <CardHeader className="pb-2">
-                    <div className="flex justify-between">
-                      <CardTitle className="text-xl">{discussion.title}</CardTitle>
-                      <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                        {discussion.category}
-                      </span>
+                    <div className="flex flex-col md:flex-row justify-between w-full">
+                      <div className="flex gap-4 items-center">
+                        <img 
+                          src={post.author.avatar} 
+                          alt={post.author.name} 
+                          className="h-10 w-10 rounded-full"
+                        />
+                        <div>
+                          <CardTitle className="text-xl">{post.title}</CardTitle>
+                          <div className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground">
+                            <span>{post.author.name}</span>
+                            <span>•</span>
+                            <span>{formatDate(post.date)}</span>
+                            <span>•</span>
+                            <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                              {post.category}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 mt-4 md:mt-0">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex items-center gap-1"
+                          onClick={() => handleUpvote(post.id)}
+                        >
+                          <ThumbsUp className="h-4 w-4" />
+                          <span>{post.upvotes}</span>
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex items-center gap-1"
+                          onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}
+                        >
+                          <MessagesSquare className="h-4 w-4" />
+                          <span>{post.replies.length}</span>
+                        </Button>
+                      </div>
                     </div>
-                    <CardDescription className="line-clamp-2">{discussion.content}</CardDescription>
                   </CardHeader>
                   <CardContent className="pb-2">
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {discussion.tags.map((tag, index) => (
-                        <span key={index} className="text-xs px-2 py-0.5 rounded-full border">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="text-sm">{post.content}</p>
                   </CardContent>
-                  <CardFooter className="flex justify-between">
+                  <CardFooter>
                     <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleUpvote(discussion.id)}
-                      className="hover-scale focus-ring"
+                      variant="link" 
+                      onClick={() => setExpandedPost(post.id)}
+                      className="p-0 h-auto text-primary hover:no-underline"
                     >
-                      <ThumbsUp className="h-4 w-4 mr-1" />
-                      Upvote ({discussion.upvotes})
-                    </Button>
-                    <Button 
-                      size="sm"
-                      className="hover-scale focus-ring"
-                    >
-                      <MessageSquare className="h-4 w-4 mr-1" />
-                      Reply
+                      Show replies ({post.replies.length})
                     </Button>
                   </CardFooter>
                 </Card>
               ))}
             </TabsContent>
             
-            <TabsContent value="career" className="space-y-4">
-              {filteredDiscussions.filter(d => d.category === "Career").map(discussion => (
-                // Similar card structure as above
-                <Card key={discussion.id} className="neo-glass hover:shadow-md transition-all duration-300">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between">
-                      <CardTitle className="text-xl">{discussion.title}</CardTitle>
-                      <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                        {discussion.category}
-                      </span>
-                    </div>
-                    <CardDescription className="line-clamp-2">{discussion.content}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pb-2">
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {discussion.tags.map((tag, index) => (
-                        <span key={index} className="text-xs px-2 py-0.5 rounded-full border">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleUpvote(discussion.id)}
-                      className="hover-scale focus-ring"
-                    >
-                      <ThumbsUp className="h-4 w-4 mr-1" />
-                      Upvote ({discussion.upvotes})
-                    </Button>
-                    <Button 
-                      size="sm"
-                      className="hover-scale focus-ring"
-                    >
-                      <MessageSquare className="h-4 w-4 mr-1" />
-                      Reply
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+            <TabsContent value="my-posts" className="space-y-6">
+              {user ? (
+                filteredPosts.filter(post => post.author.id === user.id).map(post => (
+                  // Same card structure as above for user's posts
+                  <Card key={post.id} className="neo-glass hover:shadow-md transition-all duration-300">
+                    <CardHeader className="pb-2">
+                      <div className="flex flex-col md:flex-row justify-between w-full">
+                        <div className="flex gap-4 items-center">
+                          <img 
+                            src={post.author.avatar} 
+                            alt={post.author.name} 
+                            className="h-10 w-10 rounded-full"
+                          />
+                          <div>
+                            <CardTitle className="text-xl">{post.title}</CardTitle>
+                            <div className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground">
+                              <span>{post.author.name}</span>
+                              <span>•</span>
+                              <span>{formatDate(post.date)}</span>
+                              <span>•</span>
+                              <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                                {post.category}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 mt-4 md:mt-0">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="flex items-center gap-1"
+                          >
+                            <ThumbsUp className="h-4 w-4" />
+                            <span>{post.upvotes}</span>
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="flex items-center gap-1"
+                            onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}
+                          >
+                            <MessagesSquare className="h-4 w-4" />
+                            <span>{post.replies.length}</span>
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pb-2">
+                      <p className="text-sm">{post.content}</p>
+                    </CardContent>
+                    <CardFooter>
+                      <Button 
+                        variant="link" 
+                        onClick={() => setExpandedPost(post.id)}
+                        className="p-0 h-auto text-primary hover:no-underline"
+                      >
+                        Show replies ({post.replies.length})
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
+                  <h3 className="mt-4 text-lg font-medium">Please log in</h3>
+                  <p className="mt-2 text-muted-foreground">
+                    You need to log in to view your posts.
+                  </p>
+                </div>
+              )}
+              {user && filteredPosts.filter(post => post.author.id === user.id).length === 0 && (
+                <div className="text-center py-12">
+                  <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
+                  <h3 className="mt-4 text-lg font-medium">No posts yet</h3>
+                  <p className="mt-2 text-muted-foreground">
+                    You haven't created any discussions yet.
+                  </p>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
