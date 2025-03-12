@@ -1,0 +1,140 @@
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String           @id @default(uuid())
+  email          String           @unique
+  password       String
+  name           String
+  role           Role
+  avatar         String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  materials      StudyMaterial[]  @relation("UploadedMaterials")
+  events         Event[]          @relation("CreatedEvents")
+  forumPosts     ForumPost[]      @relation("AuthoredPosts")
+  forumComments  ForumComment[]   @relation("AuthoredComments")
+  notices        Notice[]         @relation("CreatedNotices")
+  eventRSVPs     EventRSVP[]      @relation("UserRSVPs")
+}
+
+enum Role {
+  student
+  faculty
+  admin
+}
+
+model StudyMaterial {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  subject     String
+  department  String
+  year        String
+  fileType    String
+  fileSize    String
+  fileUrl     String
+  downloads   Int      @default(0)
+  uploadedBy  User     @relation("UploadedMaterials", fields: [userId], references: [id])
+  userId      String
+  uploadDate  DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id          String      @id @default(uuid())
+  title       String
+  description String
+  location    String
+  startDate   DateTime
+  endDate     DateTime
+  department  String?
+  organizer   String
+  eventType   String
+  imageUrl    String?
+  attachments Attachment[]
+  createdBy   User        @relation("CreatedEvents", fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  rsvps       EventRSVP[] @relation("EventRSVPs")
+}
+
+model EventRSVP {
+  id        String   @id @default(uuid())
+  event     Event    @relation("EventRSVPs", fields: [eventId], references: [id])
+  eventId   String
+  user      User     @relation("UserRSVPs", fields: [userId], references: [id])
+  userId    String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, userId])
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  name      String
+  fileUrl   String
+  fileType  String
+  fileSize  String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ForumPost {
+  id          String         @id @default(uuid())
+  title       String
+  content     String
+  category    String
+  tags        String[]
+  author      User           @relation("AuthoredPosts", fields: [authorId], references: [id])
+  authorId    String
+  comments    ForumComment[] @relation("PostComments")
+  views       Int            @default(0)
+  upvotes     Int            @default(0)
+  downvotes   Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model ForumComment {
+  id        String      @id @default(uuid())
+  content   String
+  post      ForumPost   @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  author    User        @relation("AuthoredComments", fields: [authorId], references: [id])
+  authorId  String
+  parent    ForumComment? @relation("CommentReplies", fields: [parentId], references: [id])
+  parentId  String?
+  replies   ForumComment[] @relation("CommentReplies")
+  upvotes   Int          @default(0)
+  downvotes Int          @default(0)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Notice {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  category    String
+  importance  String
+  author      User     @relation("CreatedNotices", fields: [authorId], references: [id])
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
